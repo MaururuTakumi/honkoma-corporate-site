@@ -1,12 +1,11 @@
 /* =============================================================================
  * RecruitPage (/recruit) — 採用（site-ia-design §4）
  *
- * 「職種で募らず、人物像で募る」オープンポジション型。深さは職種数ではなく
- * 物語の解像度で出す。レンズ=🔥主・👤副（発注者も代表の物語を読む前提で
- * 誇張ゼロ・実名実話のみ）。
+ * 「人物像で募る」を軸にしながら、実在する募集ポジションだけ具体的なJDを出す。
+ * レンズ=🔥主・👤副（発注者も代表の物語を読む前提で誇張ゼロ・実名実話のみ）。
  *
  * セクション: Hero(旗) → 創業ストーリー(感情→協働→大義) → 行動指針(再掲) →
- *   こんな人を探している(人物像) → 働き方・カルチャー → 応募CTA(カジュアル面談一本化)。
+ *   こんな人を探している(人物像) → 具体募集JD → 応募CTA(カジュアル面談一本化)。
  *
  * 行動指針(#principles)は4原則で確定済み（docs/product-and-principles-design.md
  * §1.1）。本文は /about の原本（#principles）と一字一句同一。改訂時は /about を
@@ -89,12 +88,48 @@ const PERSONAS: { title: string; body: string }[] = [
 /* かかわり方（インターン〜正社員）。職種一覧＝求人票にはしない（§2.3）。 */
 const INVOLVEMENT = ["インターン", "業務委託", "正社員"];
 
+const IMAGE_AI_JOB = {
+  responsibilities: [
+    "漫画・キャラクター向け学習データの整理、選定、キャプション設計",
+    "画像生成モデルをベースとしたLoRAの学習とチューニング",
+    "学習率、rank、学習ステップなどの条件比較と実験管理",
+    "キャラクター、画風、表情、ポーズの再現性評価",
+    "複数コマにおけるキャラクターの一貫性改善",
+    "生成ワークフローの構築と漫画制作チームへの共有",
+  ],
+  requirements: [
+    "ベクトル、行列など線形代数の基礎を理解している",
+    "Pythonを使った機械学習の実装経験がある",
+    "PyTorchなどの機械学習フレームワークに触れたことがある",
+    "画像生成モデルの仕組みやチューニングに興味がある",
+    "論文や実装を調べながら、自分で実験を進められる",
+  ],
+  welcome: [
+    "Diffusers、ComfyUIなどを使った画像生成経験",
+    "LoRA、DreamBoothなどによる追加学習の経験",
+    "CUDA環境やクラウドGPUを使った学習経験",
+    "学習データの前処理やモデル評価の経験",
+    "漫画、アニメ、キャラクター、コンテンツが好き",
+  ],
+  stack: [
+    "Python",
+    "PyTorch",
+    "Hugging Face Diffusers",
+    "Hugging Face Accelerate",
+    "ComfyUI",
+    "CUDA / Linux",
+    "Git / GitHub",
+    "Weights & Biases",
+  ],
+} as const;
+
 const X_DM_URL = "https://x.com/moriyorihayash1";
 
 /* カジュアル面談の主動線 = 単一スワップポイント（§3.2）。
  * Phase 1: null のまま → /contact?type=recruit（種別プリセット・実装済）。
  * Phase 2: Googleカレンダー予約URLを入れると、全CTAが自動で予約(新規タブ)へ昇格する。 */
-const RECRUIT_BOOKING_URL: string | null = "https://calendar.app.google/EqoJxNZ8i2NheCmM8";
+const RECRUIT_BOOKING_URL: string | null =
+  "https://calendar.app.google/EqoJxNZ8i2NheCmM8";
 
 /** まず話す動線のCTA。RECRUIT_BOOKING_URL の有無でPhase1/2を自動切替。 */
 function CasualTalkCTA({
@@ -119,18 +154,33 @@ function CasualTalkCTA({
     );
   }
   return (
-    <ArrowCTA to="/contact?type=recruit" size={size} variant={variant} withText={withText} label={withText} />
+    <ArrowCTA
+      to="/contact?type=recruit"
+      size={size}
+      variant={variant}
+      withText={withText}
+      label={withText}
+    />
   );
 }
 
 /* ヒーロー主見出しは対句2行が基本。ただし狭い画面では各行が2段に割れて不格好
  * になるため、意味の単位で4分割へ落とす（recruit-redesign §1.2）。 */
-const HERO_TITLE_WIDE = ["スキルの差は、AIが埋める。", "熱意の差は、埋まらない。"];
-const HERO_TITLE_NARROW = ["スキルの差は、", "AIが埋める。", "熱意の差は、", "埋まらない。"];
+const HERO_TITLE_WIDE = [
+  "スキルの差は、AIが埋める。",
+  "熱意の差は、埋まらない。",
+];
+const HERO_TITLE_NARROW = [
+  "スキルの差は、",
+  "AIが埋める。",
+  "熱意の差は、",
+  "埋まらない。",
+];
 
 const RecruitPage = () => {
   const [heroTitle, setHeroTitle] = useState(() =>
-    typeof window !== "undefined" && window.matchMedia("(max-width: 820px)").matches
+    typeof window !== "undefined" &&
+    window.matchMedia("(max-width: 820px)").matches
       ? HERO_TITLE_NARROW
       : HERO_TITLE_WIDE,
   );
@@ -138,7 +188,8 @@ const RecruitPage = () => {
   useEffect(() => {
     document.title = "採用情報 | honkoma";
     const mq = window.matchMedia("(max-width: 820px)");
-    const pick = () => setHeroTitle(mq.matches ? HERO_TITLE_NARROW : HERO_TITLE_WIDE);
+    const pick = () =>
+      setHeroTitle(mq.matches ? HERO_TITLE_NARROW : HERO_TITLE_WIDE);
     pick();
     mq.addEventListener("change", pick);
     return () => mq.removeEventListener("change", pick);
@@ -151,7 +202,22 @@ const RecruitPage = () => {
         {/* ヒーロー見出しは1文=1行で見せたい。--fs-hero(最大5.5rem)だと1行目
          * 「スキルの差は、AIが埋める。」がコンテナ幅を超えて語中で割れるため、
          * このヒーロー限定で最大値を抑える(820px以下は短い4行版に切替済み)。 */}
-        <style>{`.recruit-hero-heading h1 { font-size: clamp(2.1rem, 5vw, 4.4rem); word-break: keep-all; }`}</style>
+        <style>{`
+          .recruit-hero-heading h1 {
+            font-size: clamp(2.1rem, 5vw, 4.4rem);
+            word-break: keep-all;
+          }
+          .recruit-job-heading h2 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            word-break: keep-all;
+          }
+          .recruit-job-section > div:last-child {
+            padding-bottom: clamp(3.5rem, 7vh, 6rem);
+          }
+          .recruit-final-cta > div:last-child {
+            padding-top: clamp(3.5rem, 7vh, 6rem);
+          }
+        `}</style>
         <SectionHeading
           className="recruit-hero-heading"
           enLabel="Skills converge. Passion doesn't."
@@ -173,9 +239,18 @@ const RecruitPage = () => {
             honkomaは、その熱を持つ仲間を探している10人のチーム。
           </p>
           <div
-            style={{ display: "flex", gap: "1.25rem", flexWrap: "wrap", alignItems: "center" }}
+            style={{
+              display: "flex",
+              gap: "1.25rem",
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
           >
-            <CasualTalkCTA size="lg" variant="fill" withText="まず話す（カジュアル面談）" />
+            <CasualTalkCTA
+              size="lg"
+              variant="fill"
+              withText="まず話す（カジュアル面談）"
+            />
             <ArrowCTA
               to="/team"
               variant="outline"
@@ -276,7 +351,13 @@ const RecruitPage = () => {
                 >
                   {p.title}
                 </h3>
-                <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem", lineHeight: 1.85 }}>
+                <p
+                  style={{
+                    color: "var(--text-secondary)",
+                    fontSize: "0.95rem",
+                    lineHeight: 1.85,
+                  }}
+                >
                   {p.body}
                 </p>
               </SurfaceCard>
@@ -310,7 +391,7 @@ const RecruitPage = () => {
               lineHeight: 1.9,
             }}
           >
-            求人票はありません。あるのは、この4行だけ。
+            肩書きや経歴よりも、まず大切にしている4つのことがあります。
             ひとつでも「自分のことだ」と思えたら、まず話しましょう。
           </p>
         </Reveal>
@@ -324,7 +405,9 @@ const RecruitPage = () => {
                   "1px solid color-mix(in srgb, var(--text-primary) 10%, transparent)",
               }}
             >
-              <div style={{ display: "flex", alignItems: "baseline", gap: "1rem" }}>
+              <div
+                style={{ display: "flex", alignItems: "baseline", gap: "1rem" }}
+              >
                 <span
                   className="font-en"
                   style={{
@@ -433,8 +516,293 @@ const RecruitPage = () => {
         </div>
       </SectionShell>
 
+      {/* ===== 具体募集 — 画像生成AIエンジニア（インターン） ===== */}
+      <SectionShell
+        id="open-position"
+        className="recruit-job-section"
+        theme="inverse"
+        wedge="top"
+      >
+        <SectionHeading
+          className="recruit-job-heading"
+          enLabel="Job Description / Open Position 01"
+          title={["画像生成AIエンジニア", "インターン"]}
+          level={2}
+        />
+
+        <Reveal variant="fade">
+          <div
+            style={{
+              maxWidth: "62ch",
+              margin: "1.75rem 0 clamp(3rem, 6vw, 5rem)",
+            }}
+          >
+            <p
+              className="font-en"
+              style={{
+                margin: "0 0 1rem",
+                color: "var(--color-accent-bright)",
+                fontSize: "0.82rem",
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+              }}
+            >
+              Generative AI Engineer Intern — Manga &amp; Character Models
+            </p>
+            <p
+              style={{
+                margin: 0,
+                color: "var(--text-secondary)",
+                fontSize: "clamp(1rem, 1.35vw, 1.18rem)",
+                lineHeight: 2,
+              }}
+            >
+              漫画IP制作に活用する画像生成モデルを、制作現場で使える品質へ育てるポジションです。
+              キャラクターや画風の再現性を高めるLoRAの作成を中心に、学習データの設計、
+              モデルのチューニング、生成結果の評価、制作ワークフローへの組み込みまで担当します。
+              単に画像を生成するだけでなく、同じキャラクターを異なる表情・ポーズ・構図でも
+              安定して表現できる状態をつくり、実際の漫画制作へつなげることがゴールです。
+            </p>
+          </div>
+        </Reveal>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
+            gap: "clamp(2rem, 4vw, 3.5rem)",
+          }}
+        >
+          {[
+            ["What you'll do", "主な業務", IMAGE_AI_JOB.responsibilities],
+            ["Requirements", "必須要件", IMAGE_AI_JOB.requirements],
+            ["Nice to have", "歓迎要件", IMAGE_AI_JOB.welcome],
+          ].map(([en, title, items]) => (
+            <Reveal key={title as string} variant="fadeUp">
+              <div
+                style={{
+                  height: "100%",
+                  paddingTop: "1.4rem",
+                  borderTop:
+                    "1px solid color-mix(in srgb, var(--text-primary) 16%, transparent)",
+                }}
+              >
+                <span
+                  className="font-en"
+                  style={{
+                    color: "var(--color-accent-bright)",
+                    fontSize: "0.72rem",
+                    fontWeight: 700,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {en}
+                </span>
+                <h3
+                  style={{
+                    margin: "0.55rem 0 1.2rem",
+                    color: "var(--text-primary)",
+                    fontSize: "var(--fs-h3)",
+                    fontWeight: 700,
+                  }}
+                >
+                  {title}
+                </h3>
+                <ul
+                  style={{
+                    display: "grid",
+                    gap: "0.8rem",
+                    margin: 0,
+                    padding: 0,
+                    listStyle: "none",
+                  }}
+                >
+                  {(items as readonly string[]).map((item) => (
+                    <li
+                      key={item}
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "0.7rem 1fr",
+                        gap: "0.75rem",
+                        color: "var(--text-secondary)",
+                        fontSize: "0.94rem",
+                        lineHeight: 1.8,
+                      }}
+                    >
+                      <span
+                        aria-hidden="true"
+                        style={{ color: "var(--color-accent-bright)" }}
+                      >
+                        /
+                      </span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+
+        <Reveal variant="fadeUp">
+          <div
+            style={{
+              marginTop: "clamp(3rem, 6vw, 5rem)",
+              padding: "clamp(1.75rem, 4vw, 3rem)",
+              background: "var(--surface-raised)",
+              borderRadius: "var(--radius-lg)",
+            }}
+          >
+            <span
+              className="font-en"
+              style={{
+                color: "var(--color-accent-bright)",
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+              }}
+            >
+              Technology
+            </span>
+            <h3
+              style={{
+                margin: "0.55rem 0 1.3rem",
+                color: "var(--text-primary)",
+                fontSize: "var(--fs-h3)",
+                fontWeight: 700,
+              }}
+            >
+              想定技術スタック
+            </h3>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.65rem" }}>
+              {IMAGE_AI_JOB.stack.map((item) => (
+                <span
+                  key={item}
+                  className="font-en"
+                  style={{
+                    padding: "0.55rem 0.8rem",
+                    border:
+                      "1px solid color-mix(in srgb, var(--text-primary) 18%, transparent)",
+                    borderRadius: "var(--radius-pill)",
+                    color: "var(--text-secondary)",
+                    fontSize: "0.78rem",
+                    fontWeight: 600,
+                  }}
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        <Reveal variant="fadeUp">
+          <div style={{ marginTop: "clamp(3rem, 6vw, 5rem)" }}>
+            <span
+              className="font-en"
+              style={{
+                color: "var(--color-accent-bright)",
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+              }}
+            >
+              Conditions
+            </span>
+            <h3
+              style={{
+                margin: "0.55rem 0 1.5rem",
+                color: "var(--text-primary)",
+                fontSize: "var(--fs-h3)",
+                fontWeight: 700,
+              }}
+            >
+              募集条件
+            </h3>
+            <dl style={{ margin: 0 }}>
+              {[
+                [
+                  "勤務地・働き方",
+                  "東京都品川区小山5-25-7。リモートワーク可。業務内容やプロジェクトの状況に応じて、出社とリモートを組み合わせて働けます。",
+                ],
+                [
+                  "稼働",
+                  "週3日程度から応相談。アウトプットを重視しているため、フルタイムでのコミットは必須ではありません。学業や他の活動との両立も可能です。",
+                ],
+                [
+                  "報酬",
+                  "時給2,500〜6,000円を目安に、経験・スキル・担当範囲・コミットメントに応じて個別に決定します。",
+                ],
+                [
+                  "GPU環境",
+                  "学習・検証に必要な環境は会社で用意します。RTX 6000 Pro搭載マシン1台を保有し、クラウドGPUを2台契約しています。",
+                ],
+              ].map(([term, detail]) => (
+                <div
+                  key={term}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      "repeat(auto-fit, minmax(min(100%, 18rem), 1fr))",
+                    gap: "1.25rem",
+                    padding: "1.35rem 0",
+                    borderTop:
+                      "1px solid color-mix(in srgb, var(--text-primary) 16%, transparent)",
+                  }}
+                >
+                  <dt style={{ color: "var(--text-primary)", fontWeight: 700 }}>
+                    {term}
+                  </dt>
+                  <dd
+                    style={{
+                      margin: 0,
+                      color: "var(--text-secondary)",
+                      fontSize: "0.95rem",
+                      lineHeight: 1.85,
+                    }}
+                  >
+                    {detail}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </Reveal>
+
+        <Reveal variant="fadeUp">
+          <div style={{ marginTop: "clamp(2.5rem, 5vw, 4rem)" }}>
+            <p
+              style={{
+                margin: "0 0 1.25rem",
+                color: "var(--text-primary)",
+                fontSize: "clamp(1.05rem, 1.5vw, 1.25rem)",
+                fontWeight: 600,
+                lineHeight: 1.7,
+              }}
+            >
+              すべてに当てはまらなくても大丈夫です。少しでも興味があれば、まず話しましょう。
+            </p>
+            <CasualTalkCTA
+              size="lg"
+              variant="fill"
+              withText="このポジションについて話す"
+            />
+          </div>
+        </Reveal>
+      </SectionShell>
+
       {/* ===== 応募CTA（カジュアル面談一本化） — inverse ===== */}
-      <SectionShell theme="inverse" wedge="top" width="content">
+      <SectionShell
+        className="recruit-final-cta"
+        theme="inverse"
+        wedge="top"
+        width="content"
+      >
         <div style={{ maxWidth: 760 }}>
           <SectionHeading
             enLabel="Let's talk"
@@ -473,9 +841,18 @@ const RecruitPage = () => {
               <span>準備するものなし</span>
             </div>
             <div
-              style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", alignItems: "center" }}
+              style={{
+                display: "flex",
+                gap: "1.5rem",
+                flexWrap: "wrap",
+                alignItems: "center",
+              }}
             >
-              <CasualTalkCTA size="lg" variant="fill" withText="カジュアル面談を申し込む" />
+              <CasualTalkCTA
+                size="lg"
+                variant="fill"
+                withText="カジュアル面談を申し込む"
+              />
               <ArrowCTA
                 href={X_DM_URL}
                 variant="ghost"
