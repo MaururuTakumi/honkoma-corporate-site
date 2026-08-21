@@ -13,7 +13,22 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   /* /ai は診断ページ自体がChatStageを内包するため、ドロワー/フローティングは出さない。 */
-  const onAiPage = useLocation().pathname === '/ai';
+  const pathname = useLocation().pathname;
+  const onAiPage = pathname === '/ai';
+  /* /manga-ip はサブドメイン相当の独立LP。既存コーポレートUIを重ねない。 */
+  const onMangaIpPage = pathname === '/manga-ip';
+
+  if (onMangaIpPage) {
+    return (
+      <>
+        <RouteAnalytics />
+        <div className="min-h-screen bg-white">
+          <main>{children}</main>
+        </div>
+      </>
+    );
+  }
+
   return (
     <AiChatProvider>
       <RouteAnalytics />

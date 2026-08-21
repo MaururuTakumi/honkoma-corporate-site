@@ -6,8 +6,7 @@
  *
  * LayerX diffs closed here:
  *  - White surface (surface-raised + blur) instead of cream.
- *  - サービス is a flat link to /product. 口コミAI・D2C支援・ホテル向けは
- *    経営方針で撤去済み。
+ *  - サービス▾はAI開発事業とIP関連事業の2本を案内する。
  *  - Dual pill CTAs on the right (LayerX [Join Us][採用情報] slot):
  *    [導入事例 outline] + [ご相談はこちら fill].
  *  - Refined hovers: nav links grow a hairline underline from the left and
@@ -38,8 +37,8 @@ type NavChild = { label: string; to: string };
 type NavItem = { label: string; to: string; children?: NavChild[] };
 
 /* site-ia-design §1.2: 4 top items. "ホーム" is carried by the logo.
- * 私たちについて▾ bundles the company set (原則3); サービス▾ keeps only the
- * two strong destinations (D2C/口コミAI removed with their pages, M10). */
+ * 私たちについて▾ bundles the company set (原則3); サービス▾はAI開発事業と
+ * 独立LPとして運用するIP関連事業を束ねる。 */
 const NAV: NavItem[] = [
   {
     label: "私たちについて",
@@ -50,7 +49,14 @@ const NAV: NavItem[] = [
       { label: "メンバー", to: "/team" },
     ],
   },
-  { label: "サービス", to: "/product" },
+  {
+    label: "サービス",
+    to: "/product",
+    children: [
+      { label: "AI開発事業", to: "/product" },
+      { label: "IP関連事業", to: "/manga-ip" },
+    ],
+  },
   { label: "導入事例", to: "/case-studies" },
   { label: "採用情報", to: "/recruit" },
 ];
@@ -60,7 +66,8 @@ const OVERLAY_LINKS: { label: string; en: string; to: string }[] = [
   { label: "ホーム", en: "Home", to: "/" },
   { label: "私たちについて", en: "About", to: "/about" },
   { label: "メンバー", en: "Members", to: "/team" },
-  { label: "サービス", en: "Services", to: "/product" },
+  { label: "AI開発事業", en: "AI Development", to: "/product" },
+  { label: "IP関連事業", en: "IP Business", to: "/manga-ip" },
   { label: "導入事例", en: "Case Studies", to: "/case-studies" },
   { label: "採用情報", en: "Careers", to: "/recruit" },
 ];

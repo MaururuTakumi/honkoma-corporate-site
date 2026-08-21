@@ -20,6 +20,7 @@ import CaseStudiesPage from "./pages/CaseStudiesPage";
 import CaseStudyDetailPage from "./pages/CaseStudyDetailPage";
 import RecruitPage from "./pages/RecruitPage";
 import AiDiagnosisPage from "./pages/AiDiagnosisPage";
+import MangaIpPage from "./pages/MangaIpPage";
 
 // DEV-only primitive catalog. Lazily imported so it stays out of prod bundles.
 const MotionLab = import.meta.env.DEV
@@ -36,6 +37,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/ai" element={<AiDiagnosisPage />} />
+            <Route path="/manga-ip" element={<MangaIpPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/product" element={<ProductPage />} />
             <Route path="/team" element={<TeamPage />} />
