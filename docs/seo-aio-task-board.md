@@ -60,7 +60,7 @@
 | `SEO-AIO-004` | 🔜 次 | Codex | 本番とrepoの内容が違う原因を特定し、どのbranch/commitが公開されるか明確にする | Vercel設定、production branch、最新deploy SHAを読み取る | `repo SHA → deploy → 本番表示` が一致し、確認日時を記録。GitHub Issue [#41](https://github.com/MaururuTakumi/honkoma-corporate-site/issues/41) と対応 |
 | `SEO-AIO-005` | 🛑 ブロック | Codex | KizunaFinderを除外し、`ltdhonkoma.com/*` だけでSEO/AIO基準値を取り直す | `001` と `004` 完了後にGEO監査を再実行する | 対象URL、取得日時、スコア、引用URL、未確認項目が残るレポートを保存 |
 | `SEO-AIO-006` | ⬜ 未着手 | Codex | READMEの「Quick Clip」「完璧なSEO」など現状と違う説明を直す | 現行サイト、開発手順、GA4、ボード導線を事実ベースで書く | READMEだけで現在のプロジェクトと未完了事項を誤解なく説明できる |
-| `SEO-AIO-007` | ⬜ 未着手 | Codex | 2026-07-17 GEO監査の有効部分と除外部分を記録する | Kizuna固有指摘を除外し、企業サイト指摘だけを短く再編集する | 監査日、対象、採用/除外理由がrepo内で追跡できる |
+| `SEO-AIO-007` | ✅ 完了 | Codex | 2026-07-17 GEO監査の有効部分と除外部分を記録する | 継続監視へ移行 | [`docs/geo-audit-todo.md`](./geo-audit-todo.md) に監査日（2026-07-17）、対象（`ltdhonkoma.com`）、スコア（34/100、信頼度: 中）、採用部分（GEO-F001〜GEO-F010→GEO-TODO-01〜10）、除外部分（GEO-F011・GEO-F012、Kizuna固有/仮説的将来構想として対象外）を記録（2026-07-21）。元の貼り付けテキストファイルは後に空になり、当時のCodexタスクログから内容を復元したことを明記 |
 | `SEO-AIO-008` | ✅ 完了 | Codex | KizunaFinderを削除せず、企業サイトから非接続にする | 現行route、バンドル、公開ページを確認済み | `src/index.tsx`、本番バンドル、公開ホーム/サービスに文字列・リンク・画像参照なし（2026-07-21確認） |
 | `SEO-AIO-009` | ⬜ 未着手 | Codex | 全公開URLの台帳を作り、index対象・非対象を決める | route、canonical、status、title、更新責任者を一覧化する | 全routeに正規URL、index方針、担当、最終確認日がある |
 
@@ -189,3 +189,4 @@ SEO-AIO-059 | 2026-07-21 | owner: Codex
 - 2026-07-21: 初版作成。2026-07-17 GEO監査、repo監査、GitHub Issue、PR #54、Fable設計レビューを統合。KizunaFinderを別プロダクトとして対象外に設定。
 - 2026-07-21: Codex Desktopの専用タスクを作成し、サイドバーへピン留め。
 - 2026-07-21: KizunaFinder公開LPと企業サイト内の旧画像URLを410化。Google/Bing削除と30/90日後の残存確認を`058`〜`063`へ追加。
+- 2026-07-21: [`docs/geo-audit-todo.md`](./geo-audit-todo.md)（GEO監査アクションビュー）を新設し、`SEO-AIO-007`を完了とした。状態・担当・証跡の正本は引き続き本ボード。

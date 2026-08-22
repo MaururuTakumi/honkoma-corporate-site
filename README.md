@@ -3,7 +3,7 @@
 Quick ClipはApp Clipを活用した革新的なQRコード決済ソリューションのランディングページです。
 
 > [!IMPORTANT]
-> 現在のSEO/AIO改善、担当者、完了条件は [honkoma SEO / AIO タスクボード](docs/seo-aio-task-board.md) を正本として管理しています。公開サイトにはこの内部ボードを表示しません。
+> 現在のSEO/AIO改善、担当者、完了条件は [honkoma SEO / AIO タスクボード](docs/seo-aio-task-board.md) を正本として管理しています。GEO監査の指摘内容と対応タスクのつながりは [GEO監査アクションビュー](docs/geo-audit-todo.md) を参照してください。いずれの内部文書も公開サイトには表示しません。
 
 ## SEO対策について
 
